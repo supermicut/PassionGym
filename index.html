@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Passion Gym</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Passion Gym: a hex chain-puzzle workout game with seven clients, illustrated 10-episode stories and unlockable outfits. 18+.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Outfit:wght@300;400;500;600;700&family=Kaushan+Script&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+/* Layout: one hash-routed page. Home = playable hex board hero, session steps, client dossiers, phone carousel, features.
+   Privacy and Terms are their own views with a sticky table of contents. */
+:root{
+  --bg:#f3faf9; --bg-2:#e4f4f2; --card:#ffffff; --ink:#0f2d2b; --muted:#56706d; --line:#cfe4e1;
+  --teal:#11877e; --teal-2:#1bb0a3; --teal-deep:#0b5f59; --rose:#d4223a; --sun:#ffcb2b; --sun-ink:#3a2a00;
+  --paper:#f6efdc; --paper-ink:#2c2a24; --paper-line:#d9cfb4;
+  --f-display:"Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --f-body:"Outfit", "Segoe UI", system-ui, sans-serif;
+  --f-script:"Kaushan Script", "Brush Script MT", cursive;
+  --f-type:"Special Elite", "Courier New", monospace;
+  --radius:18px; --wrap:1160px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#08201f; --bg-2:#0d2b29; --card:#103331; --ink:#e4f3f1; --muted:#97b6b2; --line:#1e4643;
+  --teal:#3cc7b8; --teal-2:#5fdccd; --teal-deep:#0a4a45; --rose:#ff5a6e; --sun:#ffcf3d; --sun-ink:#2b1f00;
+  --paper:#e9e0c8; --paper-ink:#24221d; --paper-line:#c9bd9c; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#08201f; --bg-2:#0d2b29; --card:#103331; --ink:#e4f3f1; --muted:#97b6b2; --line:#1e4643;
+  --teal:#3cc7b8; --teal-2:#5fdccd; --teal-deep:#0a4a45; --rose:#ff5a6e; --sun:#ffcf3d; --sun-ink:#2b1f00;
+  --paper:#e9e0c8; --paper-ink:#24221d; --paper-line:#c9bd9c; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--f-body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+a{color:var(--teal)}
+img{max-width:100%;display:block}
+h1,h2,h3{font-family:var(--f-display);font-weight:900;line-height:.95;letter-spacing:.005em;text-wrap:balance;margin:0;text-transform:uppercase}
+p{margin:0}
+:focus-visible{outline:3px solid var(--sun);outline-offset:3px;border-radius:6px}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.hexbg{background-color:var(--bg-2);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 66 0 50V17L28 1l28 16v33L28 66zm0 31V66' fill='none' stroke='%2311877e' stroke-opacity='.09' stroke-width='1.2'/%3E%3C/svg%3E")}
+
+/* NAV */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:20px;min-height:64px}
+.brand{display:flex;align-items:baseline;gap:6px;text-decoration:none;color:var(--ink)}
+.brand .p{font-family:var(--f-script);color:var(--rose);font-size:26px;line-height:1}
+.brand .g{font-family:var(--f-display);font-weight:900;color:var(--teal);font-size:28px;letter-spacing:.04em;line-height:1}
+.links{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.links a{color:var(--ink);text-decoration:none;font-weight:500;font-size:15px;padding:8px 12px;border-radius:999px}
+.links a:hover,.links a[aria-current="page"]{background:var(--bg-2);color:var(--teal)}
+.navcta{display:none}
+@media (max-width:820px){.links .sec{display:none}}
+@media (max-width:520px){.links{gap:0}.links a{padding:8px 8px;font-size:14px}.brand .p{font-size:22px}.brand .g{font-size:24px}}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:12px;text-decoration:none;font-weight:600;border-radius:16px;padding:12px 22px 12px 16px;transition:transform .15s ease, box-shadow .15s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn-play{background:var(--sun);color:var(--sun-ink);box-shadow:0 5px 0 color-mix(in srgb,var(--sun) 55%,#7a5500)}
+.btn-play:hover{box-shadow:0 7px 0 color-mix(in srgb,var(--sun) 55%,#7a5500)}
+.btn-play small{display:block;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;opacity:.75;line-height:1.1}
+.btn-play b{display:block;font-family:var(--f-display);font-size:24px;line-height:1;letter-spacing:.02em}
+.btn-ghost{color:var(--ink);border:1.5px solid var(--line);padding:12px 20px;background:var(--card)}
+.age{display:inline-grid;place-items:center;width:46px;height:46px;border:2px solid var(--rose);color:var(--rose);font:800 16px/1 var(--f-display);border-radius:50%;letter-spacing:.02em}
+
+/* HERO */
+.hero{padding-block:56px 72px;position:relative;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center}
+.word{line-height:.8}
+.word .p{font-family:var(--f-script);color:var(--rose);font-size:clamp(64px,9vw,118px);display:block;transform:rotate(-4deg);transform-origin:left bottom;margin-left:-4px;animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+.word .g{font-family:var(--f-display);font-weight:900;color:var(--teal);font-size:clamp(110px,16vw,210px);display:block;letter-spacing:.02em;margin-top:-6px;animation:rise .9s .12s cubic-bezier(.2,.8,.2,1) both}
+.tag{font-size:clamp(20px,2.2vw,26px);font-weight:600;line-height:1.25;margin-top:18px;animation:rise .9s .24s both}
+.tag em{font-style:normal;color:var(--rose);display:block}
+.lede{color:var(--muted);max-width:46ch;margin-top:16px;animation:rise .9s .32s both}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:28px;animation:rise .9s .4s both}
+@keyframes rise{from{transform:translateY(18px)}to{transform:none}}
+
+/* PLAYABLE BOARD */
+.game{background:var(--card);border-radius:28px;box-shadow:0 30px 60px -30px color-mix(in srgb,var(--teal-deep) 60%,transparent),0 0 0 1px var(--line);overflow:hidden;min-width:0}
+.hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:16px 18px 10px}
+.meter{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted);font-weight:500;min-width:0}
+.meter .bar{height:12px;border-radius:99px;background:var(--bg-2);overflow:hidden}
+.meter .bar i{display:block;height:100%;width:0;border-radius:inherit;transition:width .35s ease}
+.meter.vit .bar i{background:linear-gradient(90deg,#57c43a,#8be05b)}
+.meter.wk .bar i{background:linear-gradient(90deg,#8b5cf6,#b28cff)}
+.meter .val{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600}
+.moves{width:78px;height:68px;display:grid;place-items:center;align-content:center;color:#fff;background:linear-gradient(160deg,#ff9c3a,#f26a12);clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)}
+.moves b{font:900 34px/0.9 var(--f-display);font-variant-numeric:tabular-nums}
+.moves span{font-size:11px;font-weight:600;letter-spacing:.04em}
+.chainline{text-align:center;font-weight:600;color:var(--muted);font-size:15px;min-height:24px;font-variant-numeric:tabular-nums}
+.chainline.boost{color:#3e9f22}
+.board{position:relative;margin:4px auto 18px;touch-action:none;user-select:none;-webkit-user-select:none;width:calc(100% - 28px)}
+.tile{position:absolute;display:grid;place-items:center;cursor:pointer;transition:transform .18s ease}
+.tile .hx{position:absolute;inset:0;clip-path:polygon(25% 2%,75% 2%,99% 50%,75% 98%,25% 98%,1% 50%);background:linear-gradient(180deg,#ffffff,#e3eef1);box-shadow:inset 0 -6px 0 #c9dbe0}
+.tile .hx::after{content:"";position:absolute;inset:7%;clip-path:inherit;background:linear-gradient(180deg,#f9fcfd,#edf4f6)}
+.tile img{position:relative;width:62%;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.18))}
+.tile.on .hx{background:linear-gradient(180deg,#ffe58a,#f5c518)}
+.tile.on .hx::after{background:linear-gradient(180deg,#fff6cf,#ffe48a)}
+.tile.on{transform:scale(1.06)}
+.tile.pop{animation:pop .28s ease forwards}
+.tile.drop{animation:drop .32s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes pop{to{transform:scale(0);opacity:0}}
+@keyframes drop{from{transform:translateY(-30px) scale(.6);opacity:0}}
+.board svg{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.over{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:12px;background:color-mix(in srgb,var(--card) 82%,transparent);backdrop-filter:blur(3px);text-align:center;border-radius:14px}
+.over h3{font-size:38px;color:var(--ink)}
+.over p{color:var(--muted);font-variant-numeric:tabular-nums}
+.over button{font:inherit;font-weight:600;border:0;border-radius:14px;padding:10px 22px;background:var(--sun);color:var(--sun-ink);cursor:pointer;box-shadow:0 4px 0 color-mix(in srgb,var(--sun) 55%,#7a5500)}
+.hint{text-align:center;font-size:13px;color:var(--muted);padding:0 16px 16px}
+
+/* SECTIONS */
+section{padding-block:88px}
+.eyebrow{font:600 13px/1 var(--f-body);letter-spacing:.16em;text-transform:uppercase;color:var(--rose);margin-bottom:14px}
+.h2{font-size:clamp(46px,6.4vw,84px);color:var(--ink)}
+.sub{color:var(--muted);max-width:56ch;margin-top:14px;font-size:18px}
+.head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:44px}
+
+/* STEPS */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;counter-reset:s}
+.step{position:relative;padding:28px 26px 26px;background:var(--card);border-radius:var(--radius);border:1px solid var(--line);min-width:0}
+.step .n{font:900 64px/1 var(--f-display);color:var(--teal);opacity:.22;position:absolute;right:18px;top:12px}
+.step h3{font-size:30px;margin-bottom:10px;max-width:12ch}
+.step p{color:var(--muted)}
+.mult{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.chip{font-size:13px;font-weight:600;padding:5px 11px;border-radius:999px;background:var(--bg-2);color:var(--ink)}
+.chip.up{background:color-mix(in srgb,#3ea64a 18%,var(--card));color:color-mix(in srgb,#2c8c39 80%,var(--ink))}
+.chip.down{background:color-mix(in srgb,var(--rose) 14%,var(--card));color:var(--rose)}
+
+/* CLIENT DOSSIERS */
+.clients{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.dossier{background:var(--paper);color:var(--paper-ink);border-radius:6px;padding:22px 22px 24px;box-shadow:0 18px 30px -18px rgba(0,0,0,.45),0 1px 0 var(--paper-line);position:relative;background-image:repeating-linear-gradient(180deg,transparent 0 29px,var(--paper-line) 29px 30px);transition:transform .25s ease;min-width:0}
+.dossier:nth-child(1){transform:rotate(-1.2deg)}.dossier:nth-child(2){transform:rotate(.8deg)}.dossier:nth-child(3){transform:rotate(-.5deg)}
+.dossier:hover{transform:rotate(0) translateY(-6px)}
+.dossier .no{font:13px/1 var(--f-type);letter-spacing:.06em;opacity:.7}
+.dossier h3{font:400 28px/1.15 var(--f-type);text-transform:none;margin:8px 0 14px;letter-spacing:0}
+.dossier .photo{background:#fff;padding:8px 8px 30px;box-shadow:0 6px 14px rgba(0,0,0,.18);transform:rotate(-2deg);width:62%;margin:0 0 16px;position:relative}
+.dossier .photo::before{content:"";position:absolute;top:-10px;left:30%;width:40%;height:20px;background:rgba(255,236,170,.75);transform:rotate(3deg)}
+.dossier .photo img{aspect-ratio:3/4;object-fit:cover;object-position:top;width:100%;background:#e8eef0}
+.dossier .photo span{position:absolute;bottom:6px;left:0;right:0;text-align:center;font:20px/1 var(--f-script);color:#333}
+.dossier dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;font:15px/1.6 var(--f-type)}
+.dossier dt{opacity:.6}
+.dossier dd{margin:0}
+.dossier .lk{color:#2a7d33}.dossier .dl{color:#b4232f}
+.dossier .note{margin-top:14px;font:15px/1.5 var(--f-type);color:#2f4ea8}
+.stamp{position:absolute;right:16px;top:118px;font:20px/1 var(--f-type);color:#c0283a;border:2.5px solid #c0283a;padding:6px 10px;transform:rotate(-12deg);opacity:.8;letter-spacing:.06em}
+.locked{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}
+.lock{border:1.5px dashed var(--line);border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px}
+.lock b{font:900 22px/1 var(--f-display);color:var(--ink);letter-spacing:.03em}
+.lock svg{flex:none}
+
+/* CAROUSEL */
+.shots{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px max(20px,env(safe-area-inset-left,0px)) 30px;scrollbar-width:none;max-width:var(--wrap);margin:0 auto}
+.shots::-webkit-scrollbar{display:none}
+.shot{flex:0 0 clamp(220px,26vw,280px);scroll-snap-align:center;display:flex;flex-direction:column;gap:14px}
+.phone{border-radius:30px;padding:8px;background:linear-gradient(160deg,#1a3836,#0b1f1e);box-shadow:0 26px 40px -24px rgba(0,0,0,.6);transition:transform .3s ease}
+.phone img{border-radius:23px;aspect-ratio:884/1558;object-fit:cover;width:100%}
+.shot:hover .phone{transform:translateY(-8px) rotate(-1deg)}
+.shot h3{font-size:26px;color:var(--ink)}
+.shot p{color:var(--muted);font-size:15px;margin-top:-8px}
+.car-ctl{display:flex;gap:10px}
+.car-ctl button{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:grid;place-items:center}
+.car-ctl button:hover{border-color:var(--teal);color:var(--teal)}
+
+/* FEATURES */
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.feat > div{background:var(--card);padding:28px 26px;min-width:0}
+.feat h3{font-size:28px;margin-bottom:8px}
+.feat p{color:var(--muted);font-size:16px}
+.feat .ic{width:44px;height:44px;margin-bottom:14px}
+
+/* BIG CTA */
+.cta{background:linear-gradient(135deg,var(--teal-deep),#0e7a72 55%,#14a093);color:#fff;border-radius:32px;padding:56px 48px;display:grid;grid-template-columns:1.3fr 1fr;gap:30px;align-items:center;overflow:hidden;position:relative}
+.cta h2{font-size:clamp(46px,6vw,78px);color:#fff}
+.cta p{opacity:.85;margin-top:12px;max-width:44ch}
+.cta img{border-radius:16px;box-shadow:0 20px 40px -20px rgba(0,0,0,.6);transform:rotate(2deg)}
+
+/* FOOTER */
+footer{padding-block:40px 48px;border-top:1px solid var(--line);margin-top:40px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:18px 32px;align-items:center;justify-content:space-between}
+footer nav{display:flex;gap:18px;flex-wrap:wrap}
+footer a{color:var(--ink);text-decoration:none}
+footer a:hover{color:var(--teal)}
+
+/* LEGAL */
+.legal{padding-block:56px 40px}
+.legal .wrap{display:grid;grid-template-columns:240px minmax(0,1fr);gap:56px;align-items:start}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 88px);font-size:14px;display:flex;flex-direction:column;gap:2px}
+.toc b{font:600 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.toc a{color:var(--muted);text-decoration:none;padding:5px 10px;border-left:2px solid var(--line)}
+.toc a:hover{color:var(--teal);border-color:var(--teal)}
+.doc{max-width:72ch;min-width:0}
+.doc h1{font-size:clamp(54px,8vw,96px);color:var(--ink)}
+.doc .meta{color:var(--muted);margin:14px 0 30px;font-size:15px}
+.doc h2{font-size:34px;margin:44px 0 12px;color:var(--ink);scroll-margin-top:90px}
+.doc h3{font:600 18px/1.3 var(--f-body);text-transform:none;margin:22px 0 6px}
+.doc p,.doc li{color:color-mix(in srgb,var(--ink) 86%,var(--muted))}
+.doc p+p{margin-top:12px}
+.doc ul{padding-left:20px;margin:10px 0}
+.doc li{margin:5px 0}
+.summary{background:var(--bg-2);border-radius:var(--radius);padding:22px 24px;display:grid;gap:10px}
+.summary div{display:flex;gap:12px;align-items:flex-start}
+.summary svg{flex:none;margin-top:4px}
+.tbl{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:14px}
+.tbl table{border-collapse:collapse;width:100%;font-size:15px;min-width:560px}
+.tbl th,.tbl td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{font-weight:600;background:var(--bg-2);font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tbl tr:last-child td{border-bottom:0}
+
+@media (max-width:960px){
+  .hero .wrap{grid-template-columns:1fr}
+  .game{max-width:520px;width:100%;margin:0 auto}
+  .steps,.clients,.feat{grid-template-columns:1fr 1fr}
+  .locked{grid-template-columns:1fr 1fr}
+  .cta{grid-template-columns:1fr;padding:44px 28px}
+  .legal .wrap{grid-template-columns:1fr;gap:20px}
+  .toc{position:static;flex-direction:row;flex-wrap:wrap;gap:6px}
+  .toc b{width:100%}
+  .toc a{border:1px solid var(--line);border-radius:99px;padding:4px 12px}
+}
+@media (max-width:620px){
+  section{padding-block:64px}
+  .steps,.clients,.feat,.locked{grid-template-columns:1fr}
+  .dossier{transform:none!important}
+  .hero{padding-block:32px 52px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#home" aria-label="Passion Gym home"><span class="p">Passion</span><span class="g">GYM</span></a>
+    <nav class="links" aria-label="Main">
+      <a class="sec" href="#how">Gameplay</a>
+      <a class="sec" href="#clients">Clients</a>
+      <a class="sec" href="#screens">Screens</a>
+      <a href="#privacy" data-route="privacy">Privacy</a>
+      <a href="#terms" data-route="terms">Terms</a>
+    </nav>
+  </div>
+</header>
+
+<main id="view-home">
+  <div class="hero hexbg">
+    <div class="wrap">
+      <div>
+        <h1 class="word"><span class="p">Passion</span><span class="g">GYM</span></h1>
+        <p class="tag">Train them. Charm them.<em>Win their hearts.</em></p>
+        <p class="lede">You're Alex Carter, the most charming personal trainer in town. Chain gym gear on a hex board, train seven clients in the zones they love, and unlock a 10-episode story for each of them.</p>
+        <div class="cta-row">
+          <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.AlexandruSimion.PassionGym" target="_blank" rel="noopener">
+            <svg width="26" height="28" viewBox="0 0 26 28" aria-hidden="true"><path d="M2 1.5 15.2 14 2 26.5c-.6-.3-1-.9-1-1.7V3.2c0-.8.4-1.4 1-1.7Z" fill="currentColor"/><path d="m19.2 10.2-3 3.8 3 3.8 4.3-2.4c1.3-.8 1.3-2 0-2.8l-4.3-2.4Z" fill="currentColor" opacity=".75"/><path d="M2 1.5 15.2 14l4-3.8L4.6 1.7C3.6 1.1 2.7 1.1 2 1.5Zm0 25L15.2 14l4 3.8-14.6 8.5c-1 .6-1.9.6-2.6.2Z" fill="currentColor" opacity=".55"/></svg>
+            <span><small>Get it on</small><b>Google Play</b></span>
+          </a>
+          <span class="age" title="For adult players">18+</span>
+        </div>
+      </div>
+
+      <div class="game" aria-label="Playable mini puzzle">
+        <div class="hud">
+          <div class="meter vit"><span>Vitamin boost</span><div class="bar"><i id="vitBar"></i></div><span class="val" id="vitVal">0/10</span></div>
+          <div class="moves"><b id="movesVal">12</b><span>moves</span></div>
+          <div class="meter wk"><span>Workout</span><div class="bar"><i id="wkBar"></i></div><span class="val" id="wkVal">0 / 3,000</span></div>
+        </div>
+        <div class="chainline" id="chainLine" aria-live="polite">Drag across 3 or more matching tiles</div>
+        <div class="board" id="board"></div>
+        <p class="hint">A taste of a training session. The full game adds bombs, zones and seven clients.</p>
+      </div>
+    </div>
+  </div>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="head">
+        <div><p class="eyebrow">How a session works</p><h2 class="h2">Workouts are<br>puzzles</h2></div>
+        <p class="sub">Every client moves around the gym on her own. Your job is to catch her in the right zone and make every move count.</p>
+      </div>
+      <div class="steps">
+        <div class="step"><span class="n">1</span><h3>Find her in a zone she loves</h3><p>Cardio, Abs, Legs or Strength. Train her where she shines and the points pour in.</p>
+          <div class="mult"><span class="chip up">Loves it ×1.3</span><span class="chip">Neutral ×1</span><span class="chip down">Dislikes ×0.6</span></div></div>
+        <div class="step"><span class="n">2</span><h3>Chain the gym gear</h3><p>Drag across dumbbells, heart-rate monitors, sneakers and yoga mats. Longer chains score more. Apples fill the Vitamin meter for double points over three moves.</p></div>
+        <div class="step"><span class="n">3</span><h3>From stars to hearts</h3><p>Win sessions to earn stars. After level five they turn into hearts, and every new level unlocks a new illustrated story episode.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="clients" class="hexbg">
+    <div class="wrap">
+      <div class="head">
+        <div><p class="eyebrow">The client book</p><h2 class="h2">Seven clients,<br>seven stories</h2></div>
+        <p class="sub">Every client has her own voice, her own likes and dislikes, and a 10-episode story that moves from the gym floor to dinners, rooftops and late-night city lights.</p>
+      </div>
+      <div class="clients">
+        <article class="dossier">
+          <p class="no">MOVE FITNESS · CLIENT No. 0001</p>
+          <h3>Lila Robinson</h3>
+          <div class="photo"><img src="assets/p_lila.webp" alt="Lila in a yellow crop top"><span>Lila</span></div>
+          <span class="stamp">PERSONAL</span>
+          <dl><dt>Age</dt><dd>22</dd><dt>Job</dt><dd>Social media influencer</dd><dt>Likes</dt><dd class="lk">Legs ×1.3</dd><dt>Dislikes</dt><dd class="dl">Strength ×0.6</dd></dl>
+        </article>
+        <article class="dossier">
+          <p class="no">MOVE FITNESS · CLIENT No. 0002</p>
+          <h3>Olivia Adams</h3>
+          <div class="photo"><img src="assets/p_olivia.webp" alt="Olivia in a cream sweater"><span>Olivia</span></div>
+          <span class="stamp">CONFIDENTIAL</span>
+          <dl><dt>Age</dt><dd>21</dd><dt>Job</dt><dd>Nutrition student</dd><dt>Likes</dt><dd class="lk">Abs ×1.3</dd><dt>Dislikes</dt><dd class="dl">Cardio ×0.6</dd></dl>
+          <p class="note">How far can a nervous beginner grow once someone believes in her?</p>
+        </article>
+        <article class="dossier">
+          <p class="no">MOVE FITNESS · CLIENT No. 0003</p>
+          <h3>Sophie Mitchell</h3>
+          <div class="photo"><img src="assets/p_sophie.webp" alt="Sophie in a black dress"><span>Sophie</span></div>
+          <span class="stamp">PERSONAL</span>
+          <dl><dt>Age</dt><dd>34</dd><dt>Job</dt><dd>Tech startup CEO</dd><dt>Likes</dt><dd class="lk">Strength ×1.3</dd><dt>Dislikes</dt><dd class="dl">Abs ×0.6</dd></dl>
+          <p class="note">Never late, never relaxed.</p>
+        </article>
+      </div>
+      <div class="locked" aria-label="Locked clients">
+        <div class="lock"><svg width="28" height="32" viewBox="0 0 28 32" aria-hidden="true"><rect x="2" y="13" width="24" height="17" rx="4" fill="currentColor" opacity=".3"/><path d="M8 13V9a6 6 0 0 1 12 0v4" stroke="currentColor" stroke-width="3" fill="none"/></svg><div><b>No. 0004</b><br>Classified</div></div>
+        <div class="lock"><svg width="28" height="32" viewBox="0 0 28 32" aria-hidden="true"><rect x="2" y="13" width="24" height="17" rx="4" fill="currentColor" opacity=".3"/><path d="M8 13V9a6 6 0 0 1 12 0v4" stroke="currentColor" stroke-width="3" fill="none"/></svg><div><b>No. 0005</b><br>Classified</div></div>
+        <div class="lock"><svg width="28" height="32" viewBox="0 0 28 32" aria-hidden="true"><rect x="2" y="13" width="24" height="17" rx="4" fill="currentColor" opacity=".3"/><path d="M8 13V9a6 6 0 0 1 12 0v4" stroke="currentColor" stroke-width="3" fill="none"/></svg><div><b>No. 0006</b><br>Classified</div></div>
+        <div class="lock"><svg width="28" height="32" viewBox="0 0 28 32" aria-hidden="true"><rect x="2" y="13" width="24" height="17" rx="4" fill="currentColor" opacity=".3"/><path d="M8 13V9a6 6 0 0 1 12 0v4" stroke="currentColor" stroke-width="3" fill="none"/></svg><div><b>No. 0007</b><br>Classified</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screens">
+    <div class="wrap">
+      <div class="head">
+        <div><p class="eyebrow">Inside the game</p><h2 class="h2">Take a look</h2></div>
+        <div class="car-ctl"><button type="button" id="prev" aria-label="Previous screen"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3 5 9l6 6" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></button><button type="button" id="next" aria-label="Next screen"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="m7 3 6 6-6 6" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></button></div>
+      </div>
+    </div>
+    <div class="shots" id="shots">
+      <figure class="shot" style="margin:0"><div class="phone"><img src="assets/shot1.webp" alt="Hex chain puzzle in the Legs zone" loading="lazy"></div><h3>Chain the gym gear</h3><p>Longer chains, bigger scores</p></figure>
+      <figure class="shot" style="margin:0"><div class="phone"><img src="assets/shot2.webp" alt="Story episode Rooftop Dinner" loading="lazy"></div><h3>Unlock their stories</h3><p>Every level opens a new episode</p></figure>
+      <figure class="shot" style="margin:0"><div class="phone"><img src="assets/shot3.webp" alt="Gym floor with four zones" loading="lazy"></div><h3>Train them where they shine</h3><p>Each client loves different zones</p></figure>
+      <figure class="shot" style="margin:0"><div class="phone"><img src="assets/shot4.webp" alt="Lila's profile with outfits" loading="lazy"></div><h3>Dress them up</h3><p>New outfits unlock as you level up</p></figure>
+      <figure class="shot" style="margin:0"><div class="phone"><img src="assets/shot5.webp" alt="Session complete with five stars" loading="lazy"></div><h3>From stars to hearts</h3><p>Win sessions, grow every relationship</p></figure>
+      <figure class="shot" style="margin:0"><div class="phone"><img src="assets/shot6.webp" alt="Client notebook page for Olivia" loading="lazy"></div><h3>Your client book</h3><p>Seven clients with secrets to discover</p></figure>
+      <figure class="shot" style="margin:0"><div class="phone"><img src="assets/shot7.webp" alt="Client file for Sophie" loading="lazy"></div><h3>Know every detail</h3><p>Reveal what each client likes</p></figure>
+      <figure class="shot" style="margin:0"><div class="phone"><img src="assets/shot8.webp" alt="Daily goals list" loading="lazy"></div><h3>New goals every day</h3><p>Finish them all for a bonus chest</p></figure>
+    </div>
+  </section>
+
+  <section id="features" style="padding-top:40px">
+    <div class="wrap">
+      <div class="head"><div><p class="eyebrow">What's in the bag</p><h2 class="h2">Everything you<br>need to train</h2></div></div>
+      <div class="feat">
+        <div><img class="ic" src="assets/t_dumbbell.png" alt=""><h3>Hex chain puzzle</h3><p>Relaxing yet challenging, with chunky 3D tiles. Drop a bomb to clear a cluster without spending a move.</p></div>
+        <div><img class="ic" src="assets/t_heart.png" alt=""><h3>70 story episodes</h3><p>Seven clients with ten illustrated episodes each, full of scenes and dialogue.</p></div>
+        <div><img class="ic" src="assets/t_sneaker.png" alt=""><h3>Four outfits each</h3><p>Casual, gym, date night and swimwear. Each unlocks as the relationship grows.</p></div>
+        <div><img class="ic" src="assets/t_mat.png" alt=""><h3>Trainer skills</h3><p>Spend coins on Cardio, Abs, Legs and Strength skills so every tile is worth more.</p></div>
+        <div><img class="ic" src="assets/t_apple.png" alt=""><h3>Daily goals</h3><p>Seven fresh goals a day, each with its own reward. Complete all seven to open the bonus chest.</p></div>
+        <div><svg class="ic" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="19" fill="none" stroke="var(--teal)" stroke-width="3"/><path d="M14 22.5 19.5 28 31 16" fill="none" stroke="var(--teal)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Plays offline</h3><p>No account needed. Optional videos give extra coins, moves and energy, and you never have to watch one.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:20px">
+    <div class="wrap">
+      <div class="cta">
+        <div>
+          <h2>Your clients<br>are waiting</h2>
+          <p>Step into the gym, pick up the clipboard and start training. Free on Android.</p>
+          <div class="cta-row" style="animation:none">
+            <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.AlexandruSimion.PassionGym" target="_blank" rel="noopener"><span><small>Get it on</small><b>Google Play</b></span></a>
+          </div>
+        </div>
+        <img src="assets/feature.webp" alt="Passion Gym key art with three clients" loading="lazy">
+      </div>
+    </div>
+  </section>
+</main>
+
+<main id="view-privacy" hidden>
+  <div class="legal">
+    <div class="wrap">
+      <nav class="toc" aria-label="Privacy sections">
+        <b>On this page</b>
+        <a href="#p-who">Who we are</a><a href="#p-collect">What we collect</a><a href="#p-firebase">Firebase</a><a href="#p-ads">Ads (Yodo1 MAS)</a><a href="#p-legal">Legal bases</a><a href="#p-choices">Your choices</a><a href="#p-retention">Retention</a><a href="#p-rights">Your rights</a><a href="#p-children">Age limit</a><a href="#p-changes">Changes &amp; contact</a>
+      </nav>
+      <article class="doc">
+        <p class="eyebrow">Passion Gym</p>
+        <h1>Privacy Policy</h1>
+        <p class="meta">Effective date: 16 October 2026</p>
+
+        <div class="summary">
+          <div><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="var(--teal)"/><path d="m5.5 9.2 2.3 2.3 4.7-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg><p>No account. We never ask for your name, email, contacts, photos or precise location.</p></div>
+          <div><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="var(--teal)"/><path d="m5.5 9.2 2.3 2.3 4.7-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg><p>Your game progress is saved on your device.</p></div>
+          <div><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="var(--teal)"/><path d="m5.5 9.2 2.3 2.3 4.7-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg><p>Google Firebase collects anonymous usage statistics and crash reports so we can fix problems and improve the game.</p></div>
+          <div><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="var(--teal)"/><path d="m5.5 9.2 2.3 2.3 4.7-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg><p>Yodo1 MAS and its ad partners serve optional rewarded videos and use device identifiers to do so. You can limit ad personalisation at any time.</p></div>
+        </div>
+
+        <h2 id="p-who">Who we are</h2>
+        <p>Passion Gym (Android package <code>com.AlexandruSimion.PassionGym</code>) is developed and published by Alexandru Simion, an independent developer based in Romania ("we", "us"). We are the controller of the personal data described in this policy. This policy covers the Passion Gym app and this website.</p>
+
+        <h2 id="p-collect">What we collect</h2>
+        <h3>Data stored on your device</h3>
+        <p>Your levels, stars and hearts, coins, gems, unlocked outfits and episodes, daily goal progress and settings are stored locally on your device. We do not receive this data. Uninstalling the app or clearing its data deletes it.</p>
+        <h3>Data collected through third-party services</h3>
+        <p>The game includes software development kits (SDKs) from Google Firebase and Yodo1 MAS. These collect data automatically when you play, as summarised below and explained in the next sections.</p>
+        <div class="tbl"><table>
+          <thead><tr><th>Data</th><th>Collected by</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>App and installation identifiers (Firebase installation ID, app instance ID)</td><td>Firebase</td><td>Analytics, crash reporting</td></tr>
+            <tr><td>Advertising ID (Android)</td><td>Firebase, Yodo1 MAS and ad partners</td><td>Ads, ad measurement, fraud prevention, analytics</td></tr>
+            <tr><td>Device and app info: model, OS version, language, screen, app version, memory</td><td>Firebase, Yodo1 MAS and ad partners</td><td>Analytics, crash reports, ad delivery</td></tr>
+            <tr><td>IP address and approximate location (country or city, derived from IP)</td><td>Firebase, Yodo1 MAS and ad partners</td><td>Ad delivery, regional statistics, fraud prevention</td></tr>
+            <tr><td>In-game events: sessions, levels played, episodes viewed, rewarded videos watched</td><td>Firebase</td><td>Understanding how the game is played</td></tr>
+            <tr><td>Ad interactions: ads shown, completed, tapped</td><td>Yodo1 MAS and ad partners</td><td>Rewards, frequency limits, measurement, billing</td></tr>
+            <tr><td>Crash logs and stack traces</td><td>Firebase Crashlytics</td><td>Finding and fixing bugs</td></tr>
+          </tbody>
+        </table></div>
+        <p>We do not sell your personal data for money and we do not collect precise GPS location, contacts, photos, microphone audio or any account credentials.</p>
+
+        <h2 id="p-firebase">Google Firebase</h2>
+        <p>Firebase is a service of Google LLC (in the EEA and UK, Google Ireland Limited). We use:</p>
+        <ul>
+          <li><strong>Google Analytics for Firebase</strong> to see, in aggregate, how players use the game: which features are used, where players get stuck, how long sessions last and which devices are common. Analytics uses an app instance ID and, where permitted, the Android advertising ID.</li>
+          <li><strong>Firebase Crashlytics</strong> to receive crash reports, which contain the stack trace, device model, OS version, available memory and a Crashlytics installation identifier. Google keeps this crash data for 90 days.</li>
+        </ul>
+        <p>Google processes this data under the <a href="https://firebase.google.com/terms/data-processing-terms" target="_blank" rel="noopener">Firebase Data Processing and Security Terms</a>. More information: <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Privacy and Security in Firebase</a> and the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>.</p>
+
+        <h2 id="p-ads">Rewarded videos (Yodo1 MAS)</h2>
+        <p>The game shows only optional rewarded videos, for example to double your coins after a session or to get extra moves or energy. There are no banner ads. You choose when to watch one.</p>
+        <p>Ads are delivered through the Yodo1 Managed Ad Service (MAS), provided by Yodo1 Ltd. MAS is a mediation platform: when you ask for a video, it requests ads from several ad networks and shows the best available one. Depending on your region, these networks can include Google AdMob, AppLovin, Unity Ads, ironSource, Mintegral, Pangle, Liftoff (Vungle), InMobi and Meta Audience Network. Yodo1 and these partners act as independent controllers of the data they collect and use it to serve, cap, measure and verify ads and, where you allow it, to personalise ads based on your interests.</p>
+        <p>The game uses the consent and age tools built into Yodo1 MAS. Where the law requires it (for example in the European Economic Area, the United Kingdom and some US states), you are asked for consent before your data is used for personalised advertising. If you decline, you still get ads, but they are not personalised.</p>
+        <p>To learn more, see the privacy information published by <a href="https://www.yodo1.com/" target="_blank" rel="noopener">Yodo1</a>, <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener">Google (AdMob)</a>, <a href="https://www.applovin.com/privacy/" target="_blank" rel="noopener">AppLovin</a> and <a href="https://unity.com/legal/game-player-and-app-user-privacy-policy" target="_blank" rel="noopener">Unity</a>.</p>
+
+        <h2 id="p-legal">Legal bases (EEA and UK)</h2>
+        <ul>
+          <li><strong>Consent</strong> for personalised advertising and the related use of your advertising ID. You can withdraw it at any time.</li>
+          <li><strong>Legitimate interests</strong> for crash reporting, aggregate analytics, non-personalised ads, fraud prevention and keeping the game secure. These help us keep a free game working and funded.</li>
+          <li><strong>Performance of a contract</strong> to deliver the rewards you choose to earn by watching a video.</li>
+        </ul>
+
+        <h2 id="p-choices">Your choices</h2>
+        <ul>
+          <li><strong>Advertising ID:</strong> on Android, go to Settings › Privacy › Ads (or Settings › Google › Ads) to delete or reset your advertising ID. Once deleted, apps receive a string of zeros instead.</li>
+          <li><strong>Ad consent:</strong> you can change your choice in the consent dialog shown by the game, or by clearing the app's data, which shows the dialog again on the next launch.</li>
+          <li><strong>Rewarded videos:</strong> they are optional. If you never tap a video button, no ad is shown.</li>
+          <li><strong>Everything:</strong> uninstalling the game stops all collection from the app.</li>
+        </ul>
+
+        <h2 id="p-retention">Retention and transfers</h2>
+        <p>Local game data stays on your device until you uninstall the app or clear its data. Firebase Crashlytics data is kept for 90 days. Google Analytics event data is kept for the period set in our Analytics settings, at most 14 months. Ad partners keep data according to their own policies.</p>
+        <p>Google, Yodo1 and some ad partners process data outside the EEA, including in the United States and Singapore. These transfers rely on safeguards such as the EU Standard Contractual Clauses or the EU–US Data Privacy Framework.</p>
+
+        <h2 id="p-rights">Your rights</h2>
+        <p>If you are in the EEA or the UK, you have the right to access, correct, delete, restrict or object to the processing of your personal data, the right to data portability and the right to withdraw consent. Because we do not run accounts or servers of our own, we cannot link Firebase or ad data to you by name. To help us find your data, include your Firebase installation ID or advertising ID if you contact us, and we will pass deletion requests to Google and Yodo1. You can also complain to your data protection authority. In Romania this is the Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal (ANSPDCP).</p>
+        <p>If you are a California resident, you have the right to know, delete and correct personal information and to opt out of "sharing" for cross-context behavioural advertising. You can exercise the opt-out by declining personalised ads in the consent dialog or by deleting your advertising ID. We do not sell personal information for money.</p>
+
+        <h2 id="p-children">Age limit</h2>
+        <p>Passion Gym is intended for adults aged 18 and over. It is not directed at children and we do not knowingly collect data from anyone under 18. If you believe a minor has used the game, contact us and we will ask Google and Yodo1 to delete the related data.</p>
+
+        <h2 id="p-changes">Changes and contact</h2>
+        <p>We may update this policy when the game or the services it uses change. We will post the new version on this page with a new effective date.</p>
+        <p>Questions or requests: write to the developer email address shown on the <a href="https://play.google.com/store/apps/details?id=com.AlexandruSimion.PassionGym" target="_blank" rel="noopener">Passion Gym Google Play page</a> under "App support". Developer: Alexandru Simion, Romania.</p>
+      </article>
+    </div>
+  </div>
+</main>
+
+<main id="view-terms" hidden>
+  <div class="legal">
+    <div class="wrap">
+      <nav class="toc" aria-label="Terms sections">
+        <b>On this page</b>
+        <a href="#t-accept">Agreement</a><a href="#t-age">Eligibility</a><a href="#t-licence">Licence</a><a href="#t-items">Virtual items</a><a href="#t-ads">Ads</a><a href="#t-conduct">Fair play</a><a href="#t-content">Content</a><a href="#t-liability">Liability</a><a href="#t-law">Governing law</a><a href="#t-contact">Contact</a>
+      </nav>
+      <article class="doc">
+        <p class="eyebrow">Passion Gym</p>
+        <h1>Terms of Use</h1>
+        <p class="meta">Effective date: 16 October 2026</p>
+
+        <h2 id="t-accept">Agreement</h2>
+        <p>These Terms are an agreement between you and Alexandru Simion ("we", "us"), the developer of Passion Gym. By downloading or playing the game you accept these Terms and our <a href="#privacy" data-route="privacy">Privacy Policy</a>. If you do not agree, do not use the game. The Google Play Terms of Service also apply to your download.</p>
+
+        <h2 id="t-age">Eligibility</h2>
+        <p>You must be at least 18 years old, or the age of majority where you live if that is higher, to play Passion Gym.</p>
+
+        <h2 id="t-licence">Licence</h2>
+        <p>We grant you a personal, limited, non-exclusive, non-transferable and revocable licence to install and play the game on devices you own or control, for your own non-commercial entertainment. All rights not expressly granted remain with us. The game, its code, art, characters, story, music and trademarks are owned by us or our licensors.</p>
+
+        <h2 id="t-items">Virtual items and currency</h2>
+        <p>The game includes virtual items such as coins, gems, energy, moves, bombs, outfits and unlocked episodes or clients. These are part of your licence. They have no real-world monetary value, cannot be exchanged for money and cannot be transferred or sold outside the game.</p>
+        <p>Your progress is stored on your device. If you uninstall the game, clear its data or change devices, your progress and virtual items may be lost and cannot be restored by us.</p>
+        <p>If the game offers purchases with real money, they are processed by Google Play under its terms. Refunds are handled under Google Play's refund policy, without affecting any rights you have under consumer protection law.</p>
+
+        <h2 id="t-ads">Rewarded videos</h2>
+        <p>You can choose to watch optional videos for in-game rewards. Ads are provided by third parties through Yodo1 MAS, and we are not responsible for the content of third-party ads or the websites and apps they link to. A reward is granted only when a video has played to the end and may not be available if no ad is available in your region.</p>
+
+        <h2 id="t-conduct">Fair play</h2>
+        <p>You agree not to:</p>
+        <ul>
+          <li>copy, modify, decompile, reverse engineer or redistribute the game or its assets, except where the law expressly allows it;</li>
+          <li>use cheats, bots, modified clients or other tools to gain rewards, or tamper with ad rewards or purchases;</li>
+          <li>use the game for any unlawful purpose.</li>
+        </ul>
+
+        <h2 id="t-content">Story content</h2>
+        <p>Passion Gym is a work of fiction for adult players. All characters are fictional adults, and any resemblance to real persons is coincidental.</p>
+
+        <h2 id="t-liability">Availability and liability</h2>
+        <p>We work to keep the game running well, but we provide it "as is" and "as available". We may update, change or stop offering features or the game itself. To the extent the law allows, we are not liable for indirect or consequential losses, or for loss of progress or virtual items. Nothing in these Terms limits liability for death or personal injury caused by negligence, for fraud, or any other liability that cannot be excluded by law, including your statutory rights as a consumer.</p>
+        <p>We may suspend or end your licence if you seriously breach these Terms. You can end it at any time by uninstalling the game.</p>
+
+        <h2 id="t-law">Governing law</h2>
+        <p>These Terms are governed by the laws of Romania. If you are a consumer living in the European Union, you also keep the protection of the mandatory laws of your country of residence and may bring claims in its courts. The European Commission's online dispute resolution information is available on its consumer website.</p>
+        <p>We may update these Terms. The new version applies from its effective date, shown at the top of this page. Continuing to play after an update means you accept it.</p>
+
+        <h2 id="t-contact">Contact</h2>
+        <p>Questions about these Terms: write to the developer email address shown on the <a href="https://play.google.com/store/apps/details?id=com.AlexandruSimion.PassionGym" target="_blank" rel="noopener">Passion Gym Google Play page</a>. Developer: Alexandru Simion, Romania.</p>
+      </article>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#home"><span class="p">Passion</span><span class="g">GYM</span></a>
+    <nav aria-label="Footer">
+      <a href="#how">Gameplay</a><a href="#clients">Clients</a><a href="#privacy" data-route="privacy">Privacy Policy</a><a href="#terms" data-route="terms">Terms of Use</a>
+      <a href="https://play.google.com/store/apps/details?id=com.AlexandruSimion.PassionGym" target="_blank" rel="noopener">Google Play</a>
+    </nav>
+    <p>© 2026 Alexandru Simion · For players 18+</p>
+  </div>
+</footer>
+
+<script>
+/* ---------- routing: #privacy and #terms are pages; every other hash lives on home ---------- */
+(function(){
+  const views={home:document.getElementById('view-home'),privacy:document.getElementById('view-privacy'),terms:document.getElementById('view-terms')};
+  function route(){
+    const h=(location.hash||'#home').slice(1);
+    let v='home';
+    if(h==='privacy'||h.startsWith('p-'))v='privacy';
+    else if(h==='terms'||h.startsWith('t-'))v='terms';
+    const changed=views[v].hidden;
+    for(const k in views)views[k].hidden=k!==v;
+    document.querySelectorAll('.links a').forEach(a=>a.toggleAttribute('aria-current',a.dataset.route===v));
+    document.querySelectorAll('.links a[aria-current]').forEach(a=>a.setAttribute('aria-current','page'));
+    const target=document.getElementById(h);
+    if(target&&h!=='home'&&h!=='privacy'&&h!=='terms'){requestAnimationFrame(()=>target.scrollIntoView({block:'start'}))}
+    else if(changed||h==='home'||h==='privacy'||h==='terms'){window.scrollTo(0,0)}
+  }
+  addEventListener('hashchange',route);route();
+})();
+
+/* ---------- carousel ---------- */
+(function(){
+  const s=document.getElementById('shots');
+  const step=()=>{const f=s.querySelector('.shot');return f?f.getBoundingClientRect().width+22:300};
+  document.getElementById('prev').onclick=()=>s.scrollBy({left:-step(),behavior:'smooth'});
+  document.getElementById('next').onclick=()=>s.scrollBy({left:step(),behavior:'smooth'});
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  let paused=false;
+  s.addEventListener('pointerenter',()=>paused=true);s.addEventListener('pointerleave',()=>paused=false);
+  s.addEventListener('touchstart',()=>paused=true,{passive:true});
+  setInterval(()=>{
+    if(paused||document.getElementById('view-home').hidden)return;
+    const end=s.scrollLeft+s.clientWidth>=s.scrollWidth-4;
+    s.scrollTo({left:end?0:s.scrollLeft+step(),behavior:'smooth'});
+  },3800);
+})();
+
+/* ---------- playable hex board ---------- */
+(function(){
+  const COLS=7,ROWS=6,TYPES=['dumbbell','heart','sneaker','mat','apple'];
+  const GOAL=3000,START_MOVES=12;
+  const board=document.getElementById('board');
+  const line=document.getElementById('chainLine');
+  const svgNS='http://www.w3.org/2000/svg';
+  let grid=[],tiles=[],chain=[],dragging=false,score=0,moves=START_MOVES,vit=0,boost=0,w=0,h=0;
+  const rnd=()=>TYPES[Math.random()*TYPES.length|0];
+  const svg=document.createElementNS(svgNS,'svg');
+  const path=document.createElementNS(svgNS,'polyline');
+  path.setAttribute('fill','none');path.setAttribute('stroke','#e0a800');path.setAttribute('stroke-width','5');
+  path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');svg.appendChild(path);
+
+  function pos(c,r){return{x:c*w*.75,y:r*h+(c%2?h/2:0)}}
+  function layout(){
+    const W=board.clientWidth; w=W/(COLS*.75+.25); h=w*.866;
+    board.style.height=(ROWS*h+h/2)+'px';
+    tiles.forEach((col,c)=>col.forEach((el,r)=>{const p=pos(c,r);el.style.left=p.x+'px';el.style.top=p.y+'px';el.style.width=w+'px';el.style.height=h+'px'}));
+    drawPath();
+  }
+  function make(c,r,t,anim){
+    const el=document.createElement('div');el.className='tile'+(anim?' drop':'');el.dataset.c=c;el.dataset.r=r;
+    el.innerHTML='<span class="hx"></span><img alt="" src="assets/t_'+t+'.png">';
+    el.setAttribute('aria-label',t);return el;
+  }
+  function init(){
+    board.innerHTML='';board.appendChild(svg);grid=[];tiles=[];
+    for(let c=0;c<COLS;c++){grid[c]=[];tiles[c]=[];for(let r=0;r<ROWS;r++){const t=rnd();grid[c][r]=t;const el=make(c,r,t,true);el.style.animationDelay=(c*40+r*30)+'ms';board.appendChild(el);tiles[c][r]=el}}
+    score=0;moves=START_MOVES;vit=0;boost=0;hud();layout();
+    line.textContent='Drag across 3 or more matching tiles';line.className='chainline';
+  }
+  function adj(a,b){
+    if(a.c===b.c)return Math.abs(a.r-b.r)===1;
+    if(Math.abs(a.c-b.c)!==1)return false;
+    const d=b.r-a.r;return a.c%2===0?(d===-1||d===0):(d===0||d===1);
+  }
+  function pts(){return chain.map(p=>{const q=pos(p.c,p.r);return (q.x+w/2)+','+(q.y+h/2)}).join(' ')}
+  function drawPath(){path.setAttribute('points',pts())}
+  function mult(){return boost>0?2:1}
+  function value(n){return Math.round(n*n*12*mult())}
+  function show(){
+    if(chain.length<2){line.textContent=boost>0?'Vitamin Boost: double points for '+boost+' more move'+(boost>1?'s':''):'Drag across 3 or more matching tiles';line.className='chainline'+(boost>0?' boost':'');return}
+    line.textContent='Chain '+chain.length+(chain.length>=3?' · +'+value(chain.length).toLocaleString('en-US'):' · keep going');
+  }
+  function hud(){
+    document.getElementById('movesVal').textContent=moves;
+    document.getElementById('vitVal').textContent=Math.min(vit,10)+'/10';
+    document.getElementById('vitBar').style.width=Math.min(vit,10)*10+'%';
+    document.getElementById('wkVal').textContent=score.toLocaleString('en-US')+' / '+GOAL.toLocaleString('en-US');
+    document.getElementById('wkBar').style.width=Math.min(100,score/GOAL*100)+'%';
+  }
+  function at(e){const el=document.elementFromPoint(e.clientX,e.clientY);const t=el&&el.closest('.tile');return t&&board.contains(t)?{c:+t.dataset.c,r:+t.dataset.r}:null}
+  function mark(){board.querySelectorAll('.tile.on').forEach(t=>t.classList.remove('on'));chain.forEach(p=>tiles[p.c][p.r].classList.add('on'));drawPath();show()}
+  board.addEventListener('pointerdown',e=>{if(moves<=0)return;const p=at(e);if(!p)return;dragging=true;chain=[p];board.setPointerCapture(e.pointerId);mark()});
+  board.addEventListener('pointermove',e=>{
+    if(!dragging)return;const p=at(e);if(!p)return;
+    const last=chain[chain.length-1];if(p.c===last.c&&p.r===last.r)return;
+    const prev=chain[chain.length-2];
+    if(prev&&prev.c===p.c&&prev.r===p.r){chain.pop();mark();return}
+    if(chain.some(q=>q.c===p.c&&q.r===p.r))return;
+    if(grid[p.c][p.r]!==grid[last.c][last.r]||!adj(last,p))return;
+    chain.push(p);mark();
+  });
+  function end(){
+    if(!dragging)return;dragging=false;
+    if(chain.length>=3){
+      const n=chain.length,type=grid[chain[0].c][chain[0].r];
+      score+=value(n);moves--;if(boost>0)boost--;
+      if(type==='apple'){vit+=n;if(vit>=10){vit=0;boost=3}}
+      line.textContent='Chain '+n+' · +'+value(n).toLocaleString('en-US');
+      const done=chain.slice();chain=[];drawPath();
+      done.forEach(p=>tiles[p.c][p.r].classList.add('pop'));
+      setTimeout(()=>{
+        done.forEach(p=>{const t=rnd();grid[p.c][p.r]=t;const old=tiles[p.c][p.r];const el=make(p.c,p.r,t,true);el.style.left=old.style.left;el.style.top=old.style.top;el.style.width=w+'px';el.style.height=h+'px';old.replaceWith(el);tiles[p.c][p.r]=el});
+        hud();show();if(score>=GOAL||moves<=0)finish();
+      },260);
+    }else{chain=[];mark()}
+    board.querySelectorAll('.tile.on').forEach(t=>t.classList.remove('on'));
+    hud();
+  }
+  board.addEventListener('pointerup',end);board.addEventListener('pointercancel',end);
+  function finish(){
+    const won=score>=GOAL;
+    const o=document.createElement('div');o.className='over';
+    o.innerHTML='<h3>'+(won?'Session complete':'Out of moves')+'</h3><p>'+score.toLocaleString('en-US')+' pts'+(won?' with '+moves+' moves to spare':'')+'</p><button type="button">Train again</button>';
+    o.querySelector('button').onclick=init;board.appendChild(o);
+  }
+  addEventListener('resize',layout);
+  init();
+})();
+</script>
+
+</body>
+</html>
